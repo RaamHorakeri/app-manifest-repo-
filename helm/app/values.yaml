@@ -1,0 +1,11 @@
+image: your-registry/app:latest
+
+replicaCount: 2
+
+service:
+  type: Nodeport
+  port: 80
+
+ingress:
+  enabled: true
+  host: app.example.com
