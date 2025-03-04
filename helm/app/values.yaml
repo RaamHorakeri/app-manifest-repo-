@@ -1,11 +1,63 @@
-image: your-registry/app:latest
+image:
+  repository: "raam2023/web-calculator"
+  tag: "{{ .Values.image.tag }}"  # This tag will be dynamically set from the pipeline
+  pullPolicy: Always
 
-replicaCount: 2
+replicaCount: 2  # Adjust as per your scaling needs
 
 service:
-  type: Nodeport
+  type: NodePort
   port: 80
+  targetPort: 3000
+  nodePort: 30080  # Ensure this port is open on the worker node
 
 ingress:
   enabled: true
-  host: app.example.com
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  hosts:
+    - host: web-calculator.example.com  # Change this to your domain
+      paths:
+        - path: "/"
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: web-calculator
+              port:
+                number: 80
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+deployment:
+  enabled: true
+  name: web-calculator
+  labels:
+    app: web-calculator
+  selectorLabels:
+    app: web-calculator
+  replicas: 2
+  container:
+    name: web-calculator
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+    ports:
+      - containerPort: 3000
+    env: []
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
