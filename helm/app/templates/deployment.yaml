@@ -3,35 +3,34 @@ kind: Deployment
 metadata:
   name: {{ .Values.deployment.name }}
   labels:
-    app: {{ .Values.deployment.labels.app }}
+    {{- range $key, $value := .Values.deployment.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 spec:
-  replicas: {{ .Values.deployment.replicas }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Values.deployment.selectorLabels.app }}
+      {{- range $key, $value := .Values.deployment.selectorLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
   template:
     metadata:
       labels:
-        app: {{ .Values.deployment.labels.app }}
+        {{- range $key, $value := .Values.deployment.selectorLabels }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .Values.deployment.container.name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.deployment.container.ports.0.containerPort }}
-          resources:
-            limits:
-              cpu: {{ .Values.deployment.container.resources.limits.cpu }}
-              memory: {{ .Values.deployment.container.resources.limits.memory }}
-            requests:
-              cpu: {{ .Values.deployment.container.resources.requests.cpu }}
-              memory: {{ .Values.deployment.container.resources.requests.memory }}
-          env: 
+            {{- range .Values.deployment.container.ports }}
+            - containerPort: {{ .containerPort }}
+            {{- end }}
+          env:
+            {{- if .Values.deployment.container.env }}
             {{- toYaml .Values.deployment.container.env | nindent 12 }}
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
-      tolerations:
-        {{- toYaml .Values.tolerations | nindent 8 }}
-      affinity:
-        {{- toYaml .Values.affinity | nindent 8 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.container.resources | nindent 12 }}
