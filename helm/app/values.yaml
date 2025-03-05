@@ -46,3 +46,23 @@ deployment:
   container:
     name: web-calculator
     env: []
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 3000
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      failureThreshold: 3
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
