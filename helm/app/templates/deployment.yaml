@@ -1,20 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: {{ .Values.deployment.name }}
+  labels:
+    app: {{ .Values.deployment.labels.app }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
-      app: app
+      app: {{ .Values.deployment.selectorLabels.app }}
   template:
     metadata:
       labels:
-        app: app
+        app: {{ .Values.deployment.labels.app }}
     spec:
       containers:
-        - name: app
+        - name: {{ .Values.deployment.container.name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:
-            - containerPort: 80
+            - containerPort: {{ .Values.deployment.container.ports.0.containerPort }}
+          resources:
+            limits:
+              cpu: {{ .Values.deployment.container.resources.limits.cpu }}
+              memory: {{ .Values.deployment.container.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.deployment.container.resources.requests.cpu }}
+              memory: {{ .Values.deployment.container.resources.requests.memory }}
+          env: 
+            {{- toYaml .Values.deployment.container.env | nindent 12 }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
