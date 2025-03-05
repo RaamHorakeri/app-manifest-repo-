@@ -1,36 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.deployment.name }}
+  name: web-calculator
   labels:
-    {{- range $key, $value := .Values.deployment.labels }}
-    {{ $key }}: {{ $value }}
-    {{- end }}
+    app: web-calculator
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- range $key, $value := .Values.deployment.selectorLabels }}
-      {{ $key }}: {{ $value }}
-      {{- end }}
+      app: web-calculator
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.deployment.selectorLabels }}
-        {{ $key }}: {{ $value }}
-        {{- end }}
+        app: web-calculator
     spec:
       containers:
-        - name: {{ .Values.deployment.container.name }}
+        - name: web-calculator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            {{- range .Values.deployment.container.ports }}
-            - containerPort: {{ .containerPort }}
-            {{- end }}
-          env:
-            {{- if .Values.deployment.container.env }}
-            {{- toYaml .Values.deployment.container.env | nindent 12 }}
-            {{- end }}
+            - containerPort: 3000
           resources:
-            {{- toYaml .Values.deployment.container.resources | nindent 12 }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+          env: {{ toYaml .Values.deployment.container.env | nindent 10 }}
