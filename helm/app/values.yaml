@@ -1,6 +1,6 @@
 image:
   repository: "raam2023/web-calculator"
-  tag: "{{ .Values.image.tag }}"  # This tag will be dynamically set from the pipeline
+  tag: "latest"  # This will be dynamically set from the pipeline
   pullPolicy: Always
 
 replicaCount: 2  # Adjust as per your scaling needs
@@ -20,11 +20,6 @@ ingress:
       paths:
         - path: "/"
           pathType: ImplementationSpecific
-          backend:
-            service:
-              name: web-calculator
-              port:
-                number: 80
 
 resources:
   limits:
@@ -50,14 +45,4 @@ deployment:
   replicas: 2
   container:
     name: web-calculator
-    image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-    ports:
-      - containerPort: 3000
     env: []
-    resources:
-      limits:
-        cpu: "500m"
-        memory: "512Mi"
-      requests:
-        cpu: "250m"
-        memory: "256Mi"
