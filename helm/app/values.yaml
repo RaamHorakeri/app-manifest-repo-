@@ -1,6 +1,6 @@
 image:
   repository: "raam2023/web-calculator"
-  tag: "latest"  # This will be dynamically set from the pipeline
+  tag: "2"
   pullPolicy: Always
 
 replicaCount: 2  # Adjust as per your scaling needs
