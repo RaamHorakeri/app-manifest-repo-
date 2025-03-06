@@ -1,6 +1,6 @@
 image:
   repository: "raam2023/web-calculator"
-  tag: "4"
+  tag: "6"
   pullPolicy: Always
 
 replicaCount: 2  # Adjust as per your scaling needs
