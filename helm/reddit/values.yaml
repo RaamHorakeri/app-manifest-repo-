@@ -1,6 +1,6 @@
 image:
-  repository: "raam2023/reddit"
-  tag: "7"
+  repository: raam2023/reddit
+  tag: "8"
   pullPolicy: Always
 
 replicaCount: 2  # Adjust as per your scaling needs
