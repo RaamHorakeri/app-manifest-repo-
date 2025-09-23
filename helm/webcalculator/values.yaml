@@ -1,9 +1,9 @@
 image:
   repository: "raam2023/web-calculator"
-  tag: "4"
+  tag: " "
   pullPolicy: Always
 
-replicaCount: 2  # Adjust as per your scaling needs
+replicaCount: 1 # Adjust as per your scaling needs
 
 service:
   type: NodePort
