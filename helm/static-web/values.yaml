@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: registry.digitalocean.com/eskeon/static-web
+  tag: ""
+  pullPolicy: Never   # LOCAL laptop – use local image only
+
+imagePullSecrets: []  # Not needed for local images
+
+nameOverride: "static-web"
+fullnameOverride: "static-web"
+
+serviceAccount:
+  create: false
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
