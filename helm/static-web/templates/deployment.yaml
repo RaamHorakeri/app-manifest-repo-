@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.fullnameOverride | default .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.fullnameOverride | default .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount | default 2 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {{ .Values.fullnameOverride | default .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.fullnameOverride | default .Release.Name }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.fullnameOverride | default .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+
+          {{- if and .Values.secret.enabled .Values.secret.name }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secret.name }}
+          {{- end }}
+
+          {{- if .Values.env }}
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+          {{- end }}
+
+          ports:
+            - containerPort: {{ .Values.service.targetPort | default 80 }}
+
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: {{ .Values.readinessProbe.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+
+          {{- if and .Values.persistence.enabled .Values.persistence.existingClaim }}
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: {{ .Values.persistence.mountPath | default "/data" }}
+          {{- end }}
+
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+
+      {{- if and .Values.persistence.enabled .Values.persistence.existingClaim }}
+      volumes:
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+      {{- end }}
