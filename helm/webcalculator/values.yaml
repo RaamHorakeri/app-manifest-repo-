@@ -1,5 +1,5 @@
 image:
-  repository: "raam2023/web-calculator"
+  repository: "raamcloudops/web-calculator"
   tag: " "
   pullPolicy: Always
 
