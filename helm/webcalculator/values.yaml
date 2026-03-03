@@ -1,6 +1,6 @@
 image:
   repository: "raamcloudops/web-calculator"
-  tag: "1.105.25"
+  tag: "26"
   pullPolicy: Always
 
 replicaCount: 1 # Adjust as per your scaling needs
